@@ -107,7 +107,9 @@ public class Main {
         long sum_len = 0;
         long length = videoFile.length();
         int len;
-        byte[] bytes = new byte[1024*1024*50];
+//        byte[] bytes = new byte[1024*1024*50];
+        int selfAdaptiveSize = (int) length;
+        byte[] bytes = new byte[selfAdaptiveSize<0 ? 1024*1024*50 : selfAdaptiveSize];
         peer_progressBar.setValue(0);
         peer_progressBar.setString("当前视频进度 : "+0+"%");
         while ((len = fis.read(bytes))!= -1){
