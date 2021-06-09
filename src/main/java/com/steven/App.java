@@ -22,6 +22,9 @@ public class App extends JFrame {
 
 
     static {
+        // 去除由于输入法导致的卡空白的问题
+        System.setProperty("sun.java2d.noddraw", "true");
+
         // 加载UI
         try {
 //            去除顶部设置按钮

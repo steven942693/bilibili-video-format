@@ -13,9 +13,10 @@ import static com.steven.App.*;
 
 public class Main {
     private static int fileCount = 0;
-    public static void start(File input,File output) throws Exception {
-        if (input == null || output == null){
-            JOptionPane.showMessageDialog(progressBar,"未选择输入或者输出目录,操作终止!!!");
+
+    public static void start(File input, File output) throws Exception {
+        if (input == null || output == null) {
+            JOptionPane.showMessageDialog(progressBar, "未选择输入或者输出目录,操作终止!!!");
             button.setForeground(Color.GREEN);
             button.setText("< 开 始 >");
             return;
@@ -24,39 +25,39 @@ public class Main {
         File[] files = input.listFiles();
         fileCount = files.length;
         for (int i = 0; i < files.length; i++) {
-            if (!flag){
+            if (!flag) {
                 return;
             }
             if (files[i].isDirectory()) {
-                progressBar.setValue(100*(i+1)/files.length);
-                progressBar.setString("总进度 : "+(100*(i+1)/files.length)+"%");
-                System.out.print(files[i]+"-->");
-                handleFile(files[i],output);
+                progressBar.setValue(100 * (i + 1) / files.length);
+                progressBar.setString("总进度 : " + (100 * (i + 1) / files.length) + "%");
+                System.out.print(files[i] + "-->");
+                handleFile(files[i], output);
             }
         }
         progressBar.setValue(100);
         progressBar.setString("总进度 : 100%");
-        JOptionPane.showMessageDialog(progressBar,"处理完成!!!");
+        JOptionPane.showMessageDialog(progressBar, "处理完成!!!");
         button.setForeground(Color.GREEN);
         button.setText("< 开 始 >");
     }
 
-    private static void handleFile(File peerDir,File outputDir) throws Exception {
+    private static void handleFile(File peerDir, File outputDir) throws Exception {
         File[] listFiles = peerDir.listFiles();
         String allNames = Arrays.toString(listFiles);
-        if (allNames.contains(".info")){
+        if (allNames.contains(".info")) {
             ArrayList<File> videoFiles = new ArrayList<>();
             String partName = null;
             for (File file : listFiles) {
                 String fileName = file.getName();
-                if (fileName.endsWith(".flv") || fileName.endsWith(".mp4")){
+                if (fileName.endsWith(".flv") || fileName.endsWith(".mp4")) {
                     videoFiles.add(file);
                 }
-                if (fileName.endsWith(".info")){
+                if (fileName.endsWith(".info")) {
                     BufferedReader br = new BufferedReader(new FileReader(file));
                     StringBuilder sb = new StringBuilder();
                     String line;
-                    while ((line = br.readLine()) != null){
+                    while ((line = br.readLine()) != null) {
                         sb.append(line);
                     }
                     String fileInfo = sb.toString();
@@ -64,9 +65,9 @@ public class Main {
                     System.out.print(partName);
                 }
             }
-            if (videoFiles.size() > 0){
+            if (videoFiles.size() > 0) {
                 // 进行视频文件的复制
-                copyVideoFiles(videoFiles,outputDir,partName);
+                copyVideoFiles(videoFiles, outputDir, partName);
             }
 
         }
@@ -82,11 +83,11 @@ public class Main {
             String[] splits = videoFileName.split("-");
             String prefix = "";
             for (int i = 1; i < splits.length; i++) {
-                prefix += splits[i]+"_";
+                prefix += splits[i] + "_";
             }
             String videoNewName = prefix + partName + "." + type;
             // 开始复制文件
-            copyFile(videoFile,outputDir,videoNewName);
+            copyFile(videoFile, outputDir, videoNewName);
         }
     }
 
@@ -126,22 +127,52 @@ public class Main {
         System.gc();
     }
 
+/*    private static void copyFile(File videoFile, File outputDir, String videoNewName) throws IOException {
+        if (!flag) {
+            return;
+        }
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+        current_File.setText(videoNewName);
+
+        File outVideoFile = new File(outputDir, videoNewName);
+        String replace = outVideoFile.getAbsolutePath().replace(" ", "_");
+        File outputFile = new File(replace);
+        peer_progressBar.setValue(0);
+        peer_progressBar.setString("当前视频进度 : " + 0 + "%");
+
+        videoFile.renameTo(outputFile);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        peer_progressBar.setValue(100);
+        peer_progressBar.setString("当前视频进度 : " + 100 + "%");
+
+
+        System.out.println("-->" + videoNewName);
+        System.gc();
+    }*/
+
     private static String getFileName(String fileInfo) {
         JSONObject object = JSON.parseObject(fileInfo);
         String PartName = object.getString("PartName");
         String PartNo = object.getString("PartNo");
         PartNo = formatPartNO(PartNo);
-        if (PartName.startsWith(PartNo)){
+        if (PartName.startsWith(PartNo)) {
             return PartName;
         }
-        return PartNo+"-"+PartName;
+        return PartNo + "-" + PartName;
     }
 
-    private static String formatPartNO(String PartNo){
+    private static String formatPartNO(String PartNo) {
         String fileCount_str = String.valueOf(fileCount);
         String PartNo_str = String.valueOf(PartNo);
         String prefix = "";
-        for (int i = 0; i < fileCount_str.length()-PartNo_str.length(); i++) {
+        for (int i = 0; i < fileCount_str.length() - PartNo_str.length(); i++) {
             prefix += "0";
         }
         return prefix + PartNo;
